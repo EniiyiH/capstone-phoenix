@@ -18,3 +18,8 @@ terraform {
 provider "aws" {
   region = var.aws_region
 }
+
+module "network" {
+  source             = "./modules/network"
+  availability_zone  = "${var.aws_region}a"   
+}
