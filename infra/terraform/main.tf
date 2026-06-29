@@ -23,3 +23,9 @@ module "network" {
   source             = "./modules/network"
   availability_zone  = "${var.aws_region}a"   
 }
+
+module "security" {
+  source = "./modules/security"
+  vpc_id = module.network.vpc_id
+  my_ip  = var.my_ip
+}
