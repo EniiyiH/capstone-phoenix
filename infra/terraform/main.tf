@@ -29,3 +29,11 @@ module "security" {
   vpc_id = module.network.vpc_id
   my_ip  = var.my_ip
 }
+
+module "compute" {
+  source             = "./modules/compute"
+  vpc_id             = module.network.vpc_id
+  subnet_id          = module.network.public_subnet_id
+  security_group_id  = module.security.security_group_id
+  key_name           = "phoenix-capstone-key"
+}

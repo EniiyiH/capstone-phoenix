@@ -1,0 +1,9 @@
+[control_plane]
+control1 ansible_host=<control_plane_public_ip>
+
+[workers]
+worker1 ansible_host=<worker_public_ip_1>
+worker2 ansible_host=<worker_public_ip_2>
+
+[control_plane:vars]
+private_ip=<control_plane_private_ip>

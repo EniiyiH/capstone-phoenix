@@ -17,6 +17,8 @@ node-token
 # secrets / env
 .env
 .env.*
+.venv
+.venv/*
 !.env.example
 *secret*.yaml
 !*secret*.example.yaml
@@ -31,6 +33,8 @@ charts/*.tgz
 #ansible
 *.retry
 inventory.ini
+infra/ansible/inventory.ini
+infra/ansible/.venv/
 kubeconfig*
 
 # os / editor
