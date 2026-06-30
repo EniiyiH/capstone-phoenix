@@ -1,0 +1,17 @@
+- name: Harden all nodes
+  hosts: all
+  become: yes
+  roles:
+    - hardening
+
+- name: Install k3s server on control plane
+  hosts: control_plane
+  become: yes
+  roles:
+    - k3s-server
+
+- name: Install k3s agent on workers
+  hosts: workers
+  become: yes
+  roles:
+    - k3s-agent

@@ -1,0 +1,39 @@
+- name: Check if k3s is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Download and run k3s install script (server)
+  shell: |
+    curl -sfL https://get.k3s.io | sh -s - server \
+      --write-kubeconfig-mode 644 \
+      --tls-san {{ ansible_host }}
+  when: not k3s_binary.stat.exists
+
+- name: Wait for node-token file to exist
+  wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+    timeout: 60
+
+- name: Read the node token
+  slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: node_token_raw
+
+- name: Set node token fact
+  set_fact:
+    k3s_node_token: "{{ node_token_raw.content | b64decode | trim }}"
+
+- name: Fetch kubeconfig to local machine
+  fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: ./kubeconfig
+    flat: yes
+
+- name: Rewrite kubeconfig server address to public IP
+  delegate_to: localhost
+  become: no
+  replace:
+    path: ./kubeconfig
+    regexp: 'https://127.0.0.1:6443'
+    replace: "https://{{ ansible_host }}:6443"

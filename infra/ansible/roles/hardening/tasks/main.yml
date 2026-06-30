@@ -1,0 +1,90 @@
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Upgrade all packages
+  apt:
+    upgrade: dist
+
+- name: Install base packages
+  apt:
+    name:
+      - ufw
+      - fail2ban
+      - curl
+    state: present
+
+- name: Create non-root deploy user
+  user:
+    name: deploy
+    groups: sudo
+    shell: /bin/bash
+    create_home: yes
+
+- name: Allow deploy user passwordless sudo
+  copy:
+    dest: /etc/sudoers.d/deploy
+    content: "deploy ALL=(ALL) NOPASSWD:ALL"
+    mode: '0440'
+
+- name: Set up authorized_keys for deploy user
+  authorized_key:
+    user: deploy
+    key: "{{ lookup('file', '~/.ssh/phoenix-capstone.pub') }}"
+
+- name: Disable SSH password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+
+- name: Disable root SSH login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify: restart sshd
+
+- name: Configure ufw defaults
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: deny }
+    - { direction: outgoing, policy: allow }
+
+- name: Allow SSH, HTTP, HTTPS through ufw
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop:
+    - "22"
+    - "80"
+    - "443"
+
+- name: Allow internal cluster traffic via ufw (VPC)
+  ufw:
+    rule: allow
+    src: 10.0.0.0/16
+  vars:
+    ansible_become: yes
+
+- name: Allow Kubernetes API (6443) from admin IP via ufw
+  ufw:
+    rule: allow
+    port: "6443"
+    proto: tcp
+    src: "{{ admin_ip }}"
+
+- name: Enable ufw
+  ufw:
+    state: enabled
+
+- name: Enable fail2ban
+  service:
+    name: fail2ban
+    enabled: yes
+    state: started
