@@ -3,23 +3,33 @@ kind: Ingress
 metadata:
   name: taskapp-ingress
   namespace: taskapp
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
 spec:
   ingressClassName: traefik
+
+  tls:
+    - hosts:
+        - taskapp.eniiyi.name.ng
+      secretName: taskapp-tls
+
   rules:
-  - host: taskapp.eniiyi.name.ng
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 80
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: backend
-            port:
-              number: 5000
+    - host: taskapp.eniiyi.name.ng
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 5000
