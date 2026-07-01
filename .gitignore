@@ -42,3 +42,4 @@ kubeconfig*
 *.swp
 .idea/
 .vscode/
+manifests/02-secret.yaml

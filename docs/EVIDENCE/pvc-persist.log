@@ -1,0 +1,15 @@
+=== Before delete ===
+ id |              note              
+----+--------------------------------
+  1 | this should survive a pod kill
+(1 row)
+
+=== Deleting pod ===
+pod "postgres-0" deleted from taskapp namespace
+=== Waiting for pod to be ready again ===
+=== After delete/recreate ===
+ id |              note              
+----+--------------------------------
+  1 | this should survive a pod kill
+(1 row)
+
