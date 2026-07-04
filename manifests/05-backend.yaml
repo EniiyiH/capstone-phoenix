@@ -25,9 +25,14 @@ spec:
           labelSelector:
             matchLabels:
               app: backend
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: backend
-          image: ghcr.io/ts-a-devops/taskapp-backend:5d6b8fc
+          image: ghcr.io/ts-a-devops/taskapp-backend:c2b906d
           ports:
             - containerPort: 5000
           envFrom:
@@ -62,6 +67,13 @@ spec:
               port: 5000
             failureThreshold: 30
             periodSeconds: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+                - ALL                            
 ---
 apiVersion: v1
 kind: Service

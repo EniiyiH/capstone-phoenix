@@ -1,0 +1,10 @@
+=== Before: manual scale to 5 ===
+deployment.apps/backend scaled
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+backend   2/5     5            2           40m
+=== Waiting for Argo CD to self-heal ===
+=== After: Argo CD reconciliation ===
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+backend   2/2     2            2           41m
+NAME      SYNC STATUS   HEALTH STATUS
+taskapp   Synced        Healthy

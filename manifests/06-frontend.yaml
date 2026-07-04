@@ -25,6 +25,10 @@ spec:
           labelSelector:
             matchLabels:
               app: frontend
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: frontend
           image: ghcr.io/ts-a-devops/taskapp-frontend:26da2b0
@@ -49,6 +53,12 @@ spec:
               port: 80
             initialDelaySeconds: 10
             periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL   
 ---
 apiVersion: v1
 kind: Service
