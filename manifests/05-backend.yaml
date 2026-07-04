@@ -28,6 +28,7 @@ spec:
       terminationGracePeriodSeconds: 30
       securityContext:
         runAsNonRoot: true
+        runAsUser: 10001
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -73,7 +74,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-                - ALL                            
+                                           
 ---
 apiVersion: v1
 kind: Service
